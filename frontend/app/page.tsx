@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import Navbar from "@/components/Navbar";
@@ -28,9 +29,16 @@ interface Invitation {
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
+  const router = useRouter();
   const [teams, setTeams] = useState<Team[]>([]);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
 
   useEffect(() => {
     if (user) {
@@ -70,7 +78,7 @@ export default function Dashboard() {
   const filteredTeams = teams.filter(t => t.name.toLowerCase().includes(search.toLowerCase()));
 
   if (loading) return <div>Loading...</div>;
-  if (!user) return <div>Please login</div>;
+  if (!user) return null; // Wait for redirect
 
   return (
     <div className="min-h-screen bg-gray-50">

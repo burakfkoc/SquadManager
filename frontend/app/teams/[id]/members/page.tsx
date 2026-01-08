@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
@@ -75,7 +75,7 @@ export default function MemberOperationsPage() {
             await api.post("/invitations/", {
                 email: inviteEmail,
                 role: inviteRole,
-                team: id
+                team: parseInt(id as string)
             });
             toast.success("Invitation sent");
             setIsInviteOpen(false);
@@ -113,6 +113,9 @@ export default function MemberOperationsPage() {
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>Invite New Member</DialogTitle>
+                                <DialogDescription>
+                                    Send an invitation to a new member to join your team.
+                                </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4 py-4">
                                 <div className="space-y-2">

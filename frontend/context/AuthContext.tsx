@@ -12,6 +12,7 @@ interface User {
 interface AuthContextType {
     user: User | null;
     login: (username: string, password: string) => Promise<void>;
+    register: (username: string, password: string, email: string) => Promise<void>;
     logout: () => void;
     loading: boolean;
 }
@@ -58,6 +59,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
+    const register = async (username: string, password: string, email: string) => {
+        try {
+            await api.post('/auth/register/', { username, password, email });
+            router.push('/login');
+        } catch (error) {
+            console.error('Registration failed:', error);
+            throw error;
+        }
+    };
+
     const logout = () => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
@@ -66,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

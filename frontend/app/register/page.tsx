@@ -8,10 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from 'next/link';
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const { login } = useAuth();
+    const [email, setEmail] = useState("");
+    const { register } = useAuth();
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [globalError, setGlobalError] = useState("");
 
@@ -20,18 +21,13 @@ export default function LoginPage() {
         try {
             setErrors({});
             setGlobalError("");
-            await login(username, password);
+            await register(username, password, email);
         } catch (err: any) {
             if (err.response && err.response.data) {
-                const data = err.response.data;
-                if (data.detail) {
-                    setGlobalError(data.detail);
-                } else {
-                    // Normalize standard Django errors which are lists of strings
-                    setErrors(data);
-                }
+                // Django REST framework returns field errors as arrays of strings
+                setErrors(err.response.data);
             } else {
-                setGlobalError("Invalid credentials or server error");
+                setGlobalError("Registration failed. Please try again.");
             }
         }
     };
@@ -40,7 +36,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <Card className="w-full max-w-md">
                 <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-center">Login to SquadManager</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-center">Register for SquadManager</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -56,6 +52,16 @@ export default function LoginPage() {
                             {errors.username && <p className="text-red-500 text-sm">{errors.username[0]}</p>}
                         </div>
                         <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            {errors.email && <p className="text-red-500 text-sm">{errors.email[0]}</p>}
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
                             <Input
                                 id="password"
@@ -68,12 +74,12 @@ export default function LoginPage() {
                         </div>
                         {globalError && <p className="text-red-500 text-sm text-center">{globalError}</p>}
                         <Button type="submit" className="w-full">
-                            Sign In
+                            Register
                         </Button>
                         <div className="text-center text-sm">
-                            Don't have an account?{" "}
-                            <Link href="/register" className="text-blue-500 hover:underline">
-                                Register
+                            Already have an account?{" "}
+                            <Link href="/login" className="text-blue-500 hover:underline">
+                                Login
                             </Link>
                         </div>
                     </form>
